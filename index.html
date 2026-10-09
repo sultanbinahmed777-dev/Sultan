@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>قارئ كروت الشبكة</title>
+    <!-- استدعاء مكتبة قراءة الباركود -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            text-align: center;
+            background-color: #121212;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            min-height: 90vh;
+            justify-content: space-between;
+        }
+        h3 {
+            margin-top: 10px;
+            margin-bottom: 15px;
+            color: #4caf50;
+        }
+        #reader {
+            width: 100%;
+            max-width: 360px;
+            margin: 0 auto;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid #333;
+        }
+        #status {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #bbb;
+        }
+        footer {
+            margin-top: auto;
+            padding-top: 20px;
+            font-size: 13px;
+            color: #888;
+        }
+        footer b {
+            color: #4caf50;
+        }
+    </style>
+</head>
+<body>
+
+    <div>
+        <h3>📷 وجه الكاميرا نحو باركود الكرت</h3>
+        <div id="reader"></div>
+        <p id="status">جاري تشغيل الكاميرا...</p>
+    </div>
+
+    <footer>
+        تصميم وإنشاء: <b>سلطان القطوي</b>
+    </footer>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const targetIp = urlParams.get('dns') || '10.0.0.1';
+
+        function onScanSuccess(decodedText) {
+            document.getElementById('status').innerText = "تمت القراءة بنجاح! جاري تسجيل الدخول...";
+            html5QrcodeScanner.clear();
+
+            if (decodedText.includes('http')) {
+                window.location.href = decodedText;
+            } else {
+                window.location.href = "http://" + targetIp + "/login?username=" + encodeURIComponent(decodedText) + "&password=" + encodeURIComponent(decodedText);
+            }
+        }
+
+        let html5QrcodeScanner = new Html5QrcodeScanner(
+            "reader", { fps: 10, qrbox: { width: 220, height: 220 } }, false);
+        html5QrcodeScanner.render(onScanSuccess);
+    </script>
+
+</body>
+</html>
